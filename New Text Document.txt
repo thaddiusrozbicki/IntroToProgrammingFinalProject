@@ -4,7 +4,7 @@ Simple overview of use/purpose.
 
 ## Description
 
-An overhaul of my 2nd project, using sprites, a start screen, larger game, etc.
+An in-depth paragraph about your project and overview of use.
 
 ## Getting Started
 
