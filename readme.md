@@ -5,6 +5,7 @@ Simple overview of use/purpose.
 ## Description
 
 An overhaul of my 2nd project, using sprites, a start screen, larger game, etc.
+If I am able to it would be interesting to spread out the spawning of mobs/platforms but I think it would be difficult using classes
 
 ## Getting Started
 
