@@ -23,7 +23,7 @@ vec = pg.math.Vector2
 # # game settings 
 WIDTH = 360
 HEIGHT = 480
-FPS = 10
+FPS = 40
 mpos = (0,0)
 
 # player settings
@@ -61,8 +61,8 @@ class Player(Sprite):
         self.b = 255
         self.image.fill((self.r,self.g,self.b))
         self.rect = self.image.get_rect()
-        # self.rect.center = (WIDTH/2, HEIGHT/2)
-        self.pos = vec(WIDTH/2, HEIGHT-45)
+    
+        self.pos = vec(WIDTH/2, HEIGHT)
         self.vel = vec(0,0)
         self.acc = vec(0,0)
         self.health = 100
@@ -109,7 +109,7 @@ class Platform(Sprite):
     def __init__(self, x, y, w, h):
         Sprite.__init__(self)
         self.image = pg.Surface((w, h))
-        self.image.fill(GREEN)
+        self.image.fill(BLACK)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -181,9 +181,9 @@ clock = pg.time.Clock()
 
 # instantiate classes
 player = Player()
-ground = Platform(0, HEIGHT-40, WIDTH, 40)
+ground = Platform(0, HEIGHT, WIDTH, 1)
 ball1 = Ball(50,250,25,25,RED)
-
+roof = Platform(0,75,WIDTH, 1)
 # create groups
 all_sprites = pg.sprite.Group()
 all_plats = pg.sprite.Group()
@@ -198,7 +198,7 @@ for i in range(15):
     print(m)
 
 # add things to groups...
-all_sprites.add(player, ground, ball1)
+all_sprites.add(player, ground, ball1, roof)
 all_plats.add(ground)
 
 # Game loop
@@ -215,6 +215,8 @@ while running:
 # checks for balls collison with player and mobs, aka floating platforms, if colliding, uses bounce function as interaction
     if pg.sprite.collide_mask(ball1, player):
         ball1.bounce()
+    if pg.sprite.collide_mask(ball1, roof):
+        ball1.bounce()
     if pg.sprite.spritecollide(ball1, mobs,True):
         ball1.bounce()
     # checks for if player quit
@@ -222,9 +224,13 @@ while running:
         # check for closed window
         if event.type == pg.QUIT:
             running = False
-    if pg.sprite.collide_mask(ball1, player):
-        pass
-    
+    if pg.sprite.spritecollide(ball1, mobs, True):
+        SCORE+=1
+    if pg.sprite.collide_mask(ball1, ground):
+        pg.quit()
+    if len(mobs)==0:
+        pg.quit()
+
     ############ Update ##############
     # update all sprites
     all_sprites.update()
