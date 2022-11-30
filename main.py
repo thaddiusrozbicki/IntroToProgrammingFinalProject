@@ -61,7 +61,6 @@ class Player(Sprite):
         self.b = 255
         self.image.fill((self.r,self.g,self.b))
         self.rect = self.image.get_rect()
-    
         self.pos = vec(WIDTH/2, HEIGHT)
         self.vel = vec(0,0)
         self.acc = vec(0,0)
@@ -109,7 +108,7 @@ class Platform(Sprite):
     def __init__(self, x, y, w, h):
         Sprite.__init__(self)
         self.image = pg.Surface((w, h))
-        self.image.fill(BLACK)
+        self.image.fill(WHITE)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -121,6 +120,7 @@ class Ball(Sprite):
         self.color = color
         self.image = pg.Surface((w, h))
         self.image.fill(WHITE)
+        self.pos = vec(WIDTH/2, HEIGHT)
         self.velocity = [randint(4,8),randint(-8,8)]
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -141,6 +141,10 @@ class Ball(Sprite):
             self.xvel*=-1
         if self.rect.y > HEIGHT - self.rect.height:
             self.yvel*=-1
+        if self.rect.y<75:
+            
+            self.rect.y=HEIGHT/6.5
+
 #defines the bounce function and how it interacts when colliding with other objects 
     def bounce(self):
         self.xvel = -self.xvel
@@ -190,7 +194,7 @@ all_plats = pg.sprite.Group()
 mobs = pg.sprite.Group()
 
 # instantiate lots of mobs in a for loop and add them to groups
-for i in range(15):
+for i in range(1):
     m = Mob(randint(0,WIDTH-100), randint(75,HEIGHT/2), 75, 25, (colorbyte(),colorbyte(),colorbyte()), "normal", 5)
     all_sprites.add(m)
     mobs.add(m)
@@ -224,30 +228,29 @@ while running:
         # check for closed window
         if event.type == pg.QUIT:
             running = False
-    if pg.sprite.spritecollide(ball1, mobs, True):
-        SCORE+=1
-    if pg.sprite.collide_mask(ball1, ground):
-        pg.quit()
-    if len(mobs)==0:
-        pg.quit()
+
+    # if pg.sprite.spritecollide(ball1, mobs, True):
+    #     SCORE+=1
+
+    if pg.sprite.collide_mask(ball1, ground) or len(mobs)==0:
+        screen.fill(WHITE)
+        player.image.fill(WHITE)
+        draw_text("FPS: " + str(delta), 22, WHITE, 64, HEIGHT / 24)
+        draw_text("Timer: " + str(seconds), 22, WHITE, 64, HEIGHT / 10)
+        draw_text("GAME OVER", 22, BLACK, WIDTH / 2, HEIGHT / 24)
+        # draw_text("POINTS: " + str(SCORE), 22, WHITE, WIDTH / 2, HEIGHT / 24)
+    else:
+        screen.fill(BLACK)
+        player.image.fill((player.r,player.g,player.b))
+        draw_text("FPS: " + str(delta), 22, RED, 64, HEIGHT / 24)
+        draw_text("Timer: " + str(seconds), 22, RED, 64, HEIGHT / 10)
+        draw_text("POINTS: " + str(SCORE), 22, WHITE, WIDTH / 2, HEIGHT / 24)
+    x=()
+    if screen.fill(x)==screen.fill(WHITE):
 
     ############ Update ##############
     # update all sprites
     all_sprites.update()
-
-    ############ Draw ################
-    # draw the background screen
-      
-    screen.fill(BLACK)
-    # screen.fill(BLACK)
-
-    # draw text
-    draw_text("FPS: " + str(delta), 22, RED, 64, HEIGHT / 24)
-    draw_text("Timer: " + str(seconds), 22, RED, 64, HEIGHT / 10)
-    draw_text("POINTS: " + str(SCORE), 22, WHITE, WIDTH / 2, HEIGHT / 24)
-  
-    # draw player color
-    player.image.fill((player.r,player.g,player.b))
 
     # draw all sprites
     all_sprites.draw(screen)
