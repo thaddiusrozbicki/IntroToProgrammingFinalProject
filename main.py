@@ -82,8 +82,7 @@ class Player(Sprite):
         self.rect.x += -1
         if hits:
             self.vel.y = -25
-    def draw(self):
-        pass
+
     def inbounds(self):
         if self.pos.x < 0:
             self.pos.x = 0
@@ -194,7 +193,7 @@ all_plats = pg.sprite.Group()
 mobs = pg.sprite.Group()
 
 # instantiate lots of mobs in a for loop and add them to groups
-for i in range(1):
+for i in range(10):
     m = Mob(randint(0,WIDTH-100), randint(75,HEIGHT/2), 75, 25, (colorbyte(),colorbyte(),colorbyte()), "normal", 5)
     all_sprites.add(m)
     mobs.add(m)
@@ -212,25 +211,23 @@ while running:
     # keep the loop running using clock
     delta = clock.tick(FPS)
     seconds = floor((pg.time.get_ticks()-start_ticks)/1000)
-# checks for collison of floor and player and sets player y vel to 0 if so
+    # checks for collison of floor and player and sets player y vel to 0 if so
     if pg.sprite.spritecollide(player, all_plats, False):
         player.pos.y = pg.sprite.spritecollide(player, all_plats, False)[0].rect.top
         player.vel.y = 0
-# checks for balls collison with player and mobs, aka floating platforms, if colliding, uses bounce function as interaction
+    # checks for balls collison with player and mobs, aka floating platforms, if colliding, uses bounce function as interaction
     if pg.sprite.collide_mask(ball1, player):
         ball1.bounce()
     if pg.sprite.collide_mask(ball1, roof):
         ball1.bounce()
     if pg.sprite.spritecollide(ball1, mobs,True):
         ball1.bounce()
+        SCORE+=1
     # checks for if player quit
     for event in pg.event.get():
         # check for closed window
         if event.type == pg.QUIT:
             running = False
-
-    # if pg.sprite.spritecollide(ball1, mobs, True):
-    #     SCORE+=1
 
     if pg.sprite.collide_mask(ball1, ground) or len(mobs)==0:
         screen.fill(WHITE)
@@ -238,15 +235,25 @@ while running:
         draw_text("FPS: " + str(delta), 22, WHITE, 64, HEIGHT / 24)
         draw_text("Timer: " + str(seconds), 22, WHITE, 64, HEIGHT / 10)
         draw_text("GAME OVER", 22, BLACK, WIDTH / 2, HEIGHT / 24)
-        # draw_text("POINTS: " + str(SCORE), 22, WHITE, WIDTH / 2, HEIGHT / 24)
+        draw_text("POINTS: " + str(SCORE), 22, WHITE,300, HEIGHT / 24)
+    else:
+        screen.fill(BLACK)
+        player.image.fill((player.r,player.g,player.b))
+        draw_text("FPS: " + str(delta), 22, RED, 64, HEIGHT / 24)
+        draw_text("Timer: " + str(seconds), 22, RED, 64, HEIGHT / 10)
+        draw_text("POINTS: " + str(SCORE), 22, RED, 300, HEIGHT / 24)
+    x=0
+    y=0
+    pixel = screen.get_at((x,y))
+
+    if pg.screen.get_at((pixel, (0,0))) == (WHITE):
+        screen.fill(WHITE)
     else:
         screen.fill(BLACK)
         player.image.fill((player.r,player.g,player.b))
         draw_text("FPS: " + str(delta), 22, RED, 64, HEIGHT / 24)
         draw_text("Timer: " + str(seconds), 22, RED, 64, HEIGHT / 10)
         draw_text("POINTS: " + str(SCORE), 22, WHITE, WIDTH / 2, HEIGHT / 24)
-    x=()
-    if screen.fill(x)==screen.fill(WHITE):
 
     ############ Update ##############
     # update all sprites
