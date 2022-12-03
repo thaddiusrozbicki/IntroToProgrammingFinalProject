@@ -8,14 +8,13 @@
 
 # import libraries and modules
 # from platform import platform
-from ast import Delete
+
 import pygame as pg
 from pygame.sprite import Sprite
 import random
 from random import randint
-import os
+from os import *
 from math import *
-import time
 from time import *
 
 vec = pg.math.Vector2
@@ -50,6 +49,13 @@ def colorbyte():
     return random.randint(0,255)
 
 # create all classees as sprites...
+def GAMEOVER():
+    screen.fill(WHITE)
+    player.image.fill(WHITE)
+    draw_text("FPS: " + str(delta), 22, WHITE, 64, HEIGHT / 24)
+    draw_text("Timer: " + str(seconds), 22, WHITE, 64, HEIGHT / 10)
+    draw_text("GAME OVER", 22, BLACK, WIDTH / 2, HEIGHT / 24)
+    draw_text("POINTS: " + str(SCORE), 22, WHITE,300, HEIGHT / 24)
 
 # player sprite, setting all ideas of Player, including color, velocity, health, etc
 class Player(Sprite):
@@ -230,30 +236,17 @@ while running:
             running = False
 
     if pg.sprite.collide_mask(ball1, ground) or len(mobs)==0:
-        screen.fill(WHITE)
-        player.image.fill(WHITE)
-        draw_text("FPS: " + str(delta), 22, WHITE, 64, HEIGHT / 24)
-        draw_text("Timer: " + str(seconds), 22, WHITE, 64, HEIGHT / 10)
-        draw_text("GAME OVER", 22, BLACK, WIDTH / 2, HEIGHT / 24)
-        draw_text("POINTS: " + str(SCORE), 22, WHITE,300, HEIGHT / 24)
+        GAMEOVER()
+        sleep(3)
     else:
         screen.fill(BLACK)
         player.image.fill((player.r,player.g,player.b))
         draw_text("FPS: " + str(delta), 22, RED, 64, HEIGHT / 24)
         draw_text("Timer: " + str(seconds), 22, RED, 64, HEIGHT / 10)
         draw_text("POINTS: " + str(SCORE), 22, RED, 300, HEIGHT / 24)
-    x=0
-    y=0
-    pixel = screen.get_at((x,y))
 
-    if pg.screen.get_at((pixel, (0,0))) == (WHITE):
-        screen.fill(WHITE)
-    else:
-        screen.fill(BLACK)
-        player.image.fill((player.r,player.g,player.b))
-        draw_text("FPS: " + str(delta), 22, RED, 64, HEIGHT / 24)
-        draw_text("Timer: " + str(seconds), 22, RED, 64, HEIGHT / 10)
-        draw_text("POINTS: " + str(SCORE), 22, WHITE, WIDTH / 2, HEIGHT / 24)
+
+
 
     ############ Update ##############
     # update all sprites
