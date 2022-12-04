@@ -49,7 +49,8 @@ def GAMEOVER():
     player.image.fill(WHITE)
     draw_text("FPS: " + str(delta), 22, WHITE, 64, HEIGHT / 24)
     draw_text("Timer: " + str(seconds), 22, WHITE, 64, HEIGHT / 10)
-    draw_text("GAME OVER", 22, BLACK, WIDTH / 2, HEIGHT / 24)
+    draw_text("GAME OVER", 40, BLACK, WIDTH / 2, HEIGHT / 4)
+    draw_text("WOULD YOU LIKE TO PLAY AGAIN?", 20, BLACK, WIDTH / 2, HEIGHT / 1.45)
     draw_text("POINTS: " + str(SCORE), 22, WHITE,310, HEIGHT / 24)
     ball1.xvel=0
     ball1.yvel=0
@@ -97,11 +98,8 @@ class Player(Sprite):
         self.controls()
         # friction
         self.acc.x += self.vel.x * -0.1
-        # self.acc.y += self.vel.y * -0.1
         self.vel += self.acc
         self.pos += self.vel + 0.5 * self.acc
-        # self.rect.x += self.xvel
-        # self.rect.y += self.yvel
         self.inbounds()
         self.rect.midbottom = self.pos
 
@@ -152,7 +150,7 @@ class Ball(Sprite):
         self.yvel = randint(-8,8)
 #defines the class mob as a subclass of sprite with coordinats,size,color,etc
 class Mob(Sprite):
-    def __init__(self, x, y, w, h, color, typeof, health):
+    def __init__(self, x, y, w, h, color, typeof):
         Sprite.__init__(self)
         self.image = pg.Surface((w, h))
         self.color = color
@@ -192,7 +190,7 @@ mobs = pg.sprite.Group()
 
 # instantiate lots of mobs in a for loop and add them to groups
 for i in range(10):
-    m = Mob(randint(0,WIDTH-100), randint(75,HEIGHT/2), 75, 25, (colorbyte(),colorbyte(),colorbyte()), "normal", 5)
+    m = Mob(randint(0,WIDTH-100), randint(75,HEIGHT/2), 75, 25, (colorbyte(),colorbyte(),colorbyte()), "normal")
     all_sprites.add(m)
     mobs.add(m)
     m.init()
@@ -228,7 +226,6 @@ while running:
             running = False
     if pg.sprite.collide_mask(ball1, ground) or len(mobs)==0:
         GAMEOVER()
-        
     else:
         screen.fill(BLACK)
         player.image.fill((player.r,player.g,player.b))
