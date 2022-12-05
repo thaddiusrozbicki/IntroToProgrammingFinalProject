@@ -81,6 +81,10 @@ class Player(Sprite):
         #     self.acc.y = 5
         if keys[pg.K_d]:
             self.acc.x = 5
+        if keys[pg.K_ESCAPE]: 
+            pg.quit()
+    def __iter__(self):
+        yield (self)
     def jump(self):
         self.rect.x += 1
         hits = pg.sprite.spritecollide(self, all_plats, False)
@@ -128,6 +132,9 @@ class Ball(Sprite):
         self.yvel = 5
         self.xvel = 5
         pg.draw.rect(self.image, color, [HEIGHT/2, WIDTH/2, 8, 8])
+
+    def __iter__(self):
+        yield (self)
 
 # updating the ball with its velocites in both directions, and keeping it inbounds within the screen
     def update(self):
@@ -214,11 +221,11 @@ while running:
         player.pos.y = pg.sprite.spritecollide(player, all_plats, False)[0].rect.top
         player.vel.y = 0
     # checks for balls collison with player and mobs, aka floating platforms, if colliding, uses bounce function as interaction
-    if pg.sprite.collide_mask(ball1, player):
+    if pg.sprite.groupcollide(ball1, player,False,False):
         ball1.bounce()
     if pg.sprite.collide_mask(ball1, roof):
         ball1.bounce()
-    if pg.sprite.spritecollide(ball1, mobs,True):
+    if pg.sprite.spritecollide(ball1, mobs, True):
         ball1.bounce()
         SCORE+=1
     # checks for if player quit
