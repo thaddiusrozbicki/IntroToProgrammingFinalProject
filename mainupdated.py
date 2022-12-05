@@ -143,11 +143,13 @@ class Ball(Sprite):
             self.yvel*=-1
         if self.rect.y<75:
             self.rect.y=HEIGHT/6.5
-
+        if self.yvel==0:
+            self.yvel=1
 #defines the bounce function and how it interacts when colliding with other objects 
     def bounce(self):
         self.xvel = -self.xvel
         self.yvel = randint(-8,8)
+
 #defines the class mob as a subclass of sprite with coordinats,size,color,etc
 class Mob(Sprite):
     def __init__(self, x, y, w, h, color, typeof):
