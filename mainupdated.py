@@ -17,8 +17,8 @@ from math import *
 from time import *
 vec = pg.math.Vector2
 # # game settings 
-WIDTH = 360
-HEIGHT = 480
+WIDTH = 1280
+HEIGHT = 720
 FPS = 40
 mpos = (0,0)
 # player settings
@@ -51,7 +51,7 @@ def GAMEOVER():
     draw_text("Timer: " + str(seconds), 22, WHITE, 64, HEIGHT / 10)
     draw_text("GAME OVER", 40, BLACK, WIDTH / 2, HEIGHT / 4)
     draw_text("WOULD YOU LIKE TO PLAY AGAIN?", 20, BLACK, WIDTH / 2, HEIGHT / 1.45)
-    draw_text("POINTS: " + str(SCORE), 22, WHITE,310, HEIGHT / 24)
+    draw_text("POINTS: " + str(SCORE), 22, WHITE,1200, HEIGHT / 24)
     ball1.xvel=0
     ball1.yvel=0
     all_sprites.empty()
@@ -148,8 +148,6 @@ class Ball(Sprite):
             self.xvel*=-1
         if self.rect.y > HEIGHT - self.rect.height:
             self.yvel*=-1
-        if self.rect.y<75:
-            self.rect.y=HEIGHT/6.5
         if self.yvel==0:
             self.yvel=1
 #defines the bounce function and how it interacts when colliding with other objects 
@@ -159,7 +157,7 @@ class Ball(Sprite):
 
 #defines the class mob as a subclass of sprite with coordinats,size,color,etc
 class Mob(Sprite):
-    def __init__(self, x, y, w, h, color, typeof):
+    def __init__(self, x, y, w, h, color):
         Sprite.__init__(self)
         self.image = pg.Surface((w, h))
         self.color = color
@@ -168,7 +166,6 @@ class Mob(Sprite):
         self.rect.x = x
         self.rect.y = y
         self.speed = 5
-        self.typeof = typeof
         self.initialized = False
         
     def init(self):
@@ -190,7 +187,7 @@ clock = pg.time.Clock()
 player = Player()
 ground = Platform(0, HEIGHT, WIDTH, 1)
 ball1 = Ball(50,250,25,25,RED)
-roof = Platform(0,75,WIDTH, 1)
+
 
 # create groups
 all_sprites = pg.sprite.Group()
@@ -198,17 +195,20 @@ all_plats = pg.sprite.Group()
 mobs = pg.sprite.Group()
 
 # instantiate lots of mobs in a for loop and add them to groups
-for i in range(10):
-    m = Mob(randint(0,WIDTH-100), randint(75,HEIGHT/2), 75, 25, (colorbyte(),colorbyte(),colorbyte()), "normal")
+for i in range(20):
+    m = Mob(randint(0,WIDTH-100), randint(75,HEIGHT/2), 75, 25, (colorbyte(),colorbyte(),colorbyte()))
     all_sprites.add(m)
     mobs.add(m)
     m.init()
 
 
 # add things to groups...
-all_sprites.add(player, ground, ball1, roof)
+all_sprites.add(player, ball1)
 all_plats.add(ground)
 
+smallfont = pg.font.SysFont('Corbel',35)
+text = smallfont.render('quit' , True , WHITE)
+mouse = pg.mouse.get_pos()
 # Game loop
 start_ticks = pg.time.get_ticks()
 running = True
@@ -223,8 +223,8 @@ while running:
     # checks for balls collison with player and mobs, aka floating platforms, if colliding, uses bounce function as interaction
     if pg.sprite.groupcollide(ball1, player,False,False):
         ball1.bounce()
-    if pg.sprite.collide_mask(ball1, roof):
-        ball1.bounce()
+    if pg.sprite.groupcollide(ball1, player,False,False) and ball1.pos.y==(HEIGHT-25):
+        ball1.pos.y=(ball1.pos.y)-5
     if pg.sprite.spritecollide(ball1, mobs, True):
         ball1.bounce()
         SCORE+=1
@@ -233,21 +233,27 @@ while running:
         # check for closed window
         if event.type == pg.QUIT:
             running = False
+        if event.type == pg.MOUSEBUTTONDOWN:
+              
+            #if the mouse is clicked on the
+            # button the game is terminated
+            if WIDTH/2 <= mouse[0] <= WIDTH/2+140 and HEIGHT/2 <= mouse[1] <= HEIGHT/2+40:
+                pg.quit()
     if pg.sprite.collide_mask(ball1, ground) or len(mobs)==0:
         GAMEOVER()
+        screen.blit(text , (WIDTH/2+50,HEIGHT/2))
+        pg.draw.rect(screen,BLACK,[WIDTH/2,HEIGHT/2,140,40])
     else:
         screen.fill(BLACK)
         player.image.fill((player.r,player.g,player.b))
         draw_text("FPS: " + str(delta), 22, RED, 64, HEIGHT / 24)
         draw_text("Timer: " + str(seconds), 22, RED, 64, HEIGHT / 10)
-        draw_text("POINTS: " + str(SCORE), 22, RED, 300, HEIGHT / 24)
-
+        draw_text("POINTS: " + str(SCORE), 22, RED, 1200, HEIGHT / 24)
+        
     # update all sprites
     all_sprites.update()
-
     # draw all sprites
     all_sprites.draw(screen)
-
     # buffer - after drawing everything, flip display
     pg.display.update()
     pg.display.flip()
