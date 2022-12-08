@@ -4,7 +4,7 @@
 
 # sources
 # https://www.101computing.net/pong-tutorial-using-pygame-adding-a-bouncing-ball/
-
+# https://www.geeksforgeeks.org/how-to-create-buttons-in-a-game-using-pygame/
 
 # import libraries and modules
 # from platform import platform
@@ -209,6 +209,7 @@ all_plats.add(ground)
 smallfont = pg.font.SysFont('Corbel',35)
 text = smallfont.render('quit' , True , WHITE)
 mouse = pg.mouse.get_pos()
+
 # Game loop
 start_ticks = pg.time.get_ticks()
 running = True
