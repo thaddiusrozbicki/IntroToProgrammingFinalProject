@@ -5,6 +5,7 @@
 # sources
 # https://www.101computing.net/pong-tutorial-using-pygame-adding-a-bouncing-ball/
 # https://www.geeksforgeeks.org/how-to-create-buttons-in-a-game-using-pygame/
+# https://bobbyhadz.com/blog/python-typeerror-type-object-is-not-iterable#:~:text=The%20Python%20%22TypeError%3A%20'type,occurs%20when%20the%20range%20function.
 
 # import libraries and modules
 # from platform import platform
@@ -223,9 +224,10 @@ while running:
         player.vel.y = 0
     # checks for balls collison with player and mobs, aka floating platforms, if colliding, uses bounce function as interaction
     if pg.sprite.groupcollide(ball1, player,False,False):
+        ball1.rect.y-=5
         ball1.bounce()
-    if pg.sprite.groupcollide(ball1, player,False,False) and ball1.pos.y==(HEIGHT-25):
-        ball1.pos.y=(ball1.pos.y)-5
+    # if pg.sprite.groupcollide(ball1, player,False,False) and ball1.pos.y==(HEIGHT-25):
+    #     ball1.pos.y=(ball1.pos.y)-5
     if pg.sprite.spritecollide(ball1, mobs, True):
         ball1.bounce()
         SCORE+=1
@@ -235,9 +237,6 @@ while running:
         if event.type == pg.QUIT:
             running = False
         if event.type == pg.MOUSEBUTTONDOWN:
-              
-            #if the mouse is clicked on the
-            # button the game is terminated
             if WIDTH/2 <= mouse[0] <= WIDTH/2+140 and HEIGHT/2 <= mouse[1] <= HEIGHT/2+40:
                 pg.quit()
     if pg.sprite.collide_mask(ball1, ground) or len(mobs)==0:
