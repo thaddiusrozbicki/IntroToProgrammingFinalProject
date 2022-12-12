@@ -47,7 +47,6 @@ def colorbyte():
 # create all classees as sprites...
 def GAMEOVER():
     screen.fill(WHITE)
-    player.image.fill(WHITE)
     draw_text("FPS: " + str(delta), 22, WHITE, 64, HEIGHT / 24)
     draw_text("Timer: " + str(seconds), 22, WHITE, 64, HEIGHT / 10)
     draw_text("GAME OVER", 40, BLACK, WIDTH / 2, HEIGHT / 4)
@@ -196,7 +195,7 @@ all_plats = pg.sprite.Group()
 mobs = pg.sprite.Group()
 
 # instantiate lots of mobs in a for loop and add them to groups
-for i in range(20):
+for i in range(1):
     m = Mob(randint(0,WIDTH-100), randint(75,HEIGHT/2), 75, 25, (colorbyte(),colorbyte(),colorbyte()))
     all_sprites.add(m)
     mobs.add(m)
@@ -226,8 +225,6 @@ while running:
     if pg.sprite.groupcollide(ball1, player,False,False):
         ball1.rect.y-=5
         ball1.bounce()
-    # if pg.sprite.groupcollide(ball1, player,False,False) and ball1.pos.y==(HEIGHT-25):
-    #     ball1.pos.y=(ball1.pos.y)-5
     if pg.sprite.spritecollide(ball1, mobs, True):
         ball1.bounce()
         SCORE+=1
@@ -236,19 +233,24 @@ while running:
         # check for closed window
         if event.type == pg.QUIT:
             running = False
-        if event.type == pg.MOUSEBUTTONDOWN:
+        # if event.type == pg.MOUSEBUTTONDOWN:
+        #     if WIDTH/2 <= mouse[0] <= WIDTH/2+140 and HEIGHT/2 <= mouse[1] <= HEIGHT/2+40:
+        #         pg.quit()
+        if pg.mouse.get_pressed()==True:
+            print('inbounds')
             if WIDTH/2 <= mouse[0] <= WIDTH/2+140 and HEIGHT/2 <= mouse[1] <= HEIGHT/2+40:
                 pg.quit()
-    if pg.sprite.collide_mask(ball1, ground) or len(mobs)==0:
-        GAMEOVER()
-        screen.blit(text , (WIDTH/2+50,HEIGHT/2))
-        pg.draw.rect(screen,BLACK,[WIDTH/2,HEIGHT/2,140,40])
-    else:
-        screen.fill(BLACK)
-        player.image.fill((player.r,player.g,player.b))
-        draw_text("FPS: " + str(delta), 22, RED, 64, HEIGHT / 24)
-        draw_text("Timer: " + str(seconds), 22, RED, 64, HEIGHT / 10)
-        draw_text("POINTS: " + str(SCORE), 22, RED, 1200, HEIGHT / 24)
+        if pg.sprite.collide_mask(ball1, ground) or len(mobs)==0:
+            GAMEOVER()
+            pg.draw.rect(screen,BLACK,[WIDTH/2,HEIGHT/2,140,40])
+            screen.blit(text , (WIDTH/2+50,HEIGHT/2))
+            
+        else:
+            screen.fill(BLACK)
+            player.image.fill((player.r,player.g,player.b))
+            draw_text("FPS: " + str(delta), 22, RED, 64, HEIGHT / 24)
+            draw_text("Timer: " + str(seconds), 22, RED, 64, HEIGHT / 10)
+            draw_text("POINTS: " + str(SCORE), 22, RED, 1200, HEIGHT / 24)
         
     # update all sprites
     all_sprites.update()
