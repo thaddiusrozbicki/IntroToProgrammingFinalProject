@@ -4,11 +4,11 @@
 
 # sources
 # https://www.101computing.net/pong-tutorial-using-pygame-adding-a-bouncing-ball/
-
+# https://www.geeksforgeeks.org/how-to-create-buttons-in-a-game-using-pygame/
+# https://bobbyhadz.com/blog/python-typeerror-type-object-is-not-iterable#:~:text=The%20Python%20%22TypeError%3A%20'type,occurs%20when%20the%20range%20function.
 
 # import libraries and modules
 # from platform import platform
-
 import pygame as pg
 from pygame.sprite import Sprite
 import random
@@ -16,20 +16,16 @@ from random import randint
 from os import *
 from math import *
 from time import *
-
 vec = pg.math.Vector2
-
 # # game settings 
-WIDTH = 360
-HEIGHT = 480
+WIDTH = 1280
+HEIGHT = 720
 FPS = 40
 mpos = (0,0)
-
 # player settings
 PLAYER_GRAV = 0.9
 PLAYER_FRIC = 0.1
 SCORE = 0
-
 # define colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -51,11 +47,14 @@ def colorbyte():
 # create all classees as sprites...
 def GAMEOVER():
     screen.fill(WHITE)
-    player.image.fill(WHITE)
     draw_text("FPS: " + str(delta), 22, WHITE, 64, HEIGHT / 24)
     draw_text("Timer: " + str(seconds), 22, WHITE, 64, HEIGHT / 10)
-    draw_text("GAME OVER", 22, BLACK, WIDTH / 2, HEIGHT / 24)
-    draw_text("POINTS: " + str(SCORE), 22, WHITE,300, HEIGHT / 24)
+    draw_text("GAME OVER", 40, BLACK, WIDTH / 2, HEIGHT / 4)
+    draw_text("WOULD YOU LIKE TO PLAY AGAIN?", 20, BLACK, WIDTH / 2, HEIGHT / 1.45)
+    draw_text("POINTS: " + str(SCORE), 22, WHITE,1200, HEIGHT / 24)
+    ball1.xvel=0
+    ball1.yvel=0
+    all_sprites.empty()
 
 # player sprite, setting all ideas of Player, including color, velocity, health, etc
 class Player(Sprite):
@@ -82,13 +81,16 @@ class Player(Sprite):
         #     self.acc.y = 5
         if keys[pg.K_d]:
             self.acc.x = 5
+        if keys[pg.K_ESCAPE]: 
+            pg.quit()
+    def __iter__(self):
+        yield (self)
     def jump(self):
         self.rect.x += 1
         hits = pg.sprite.spritecollide(self, all_plats, False)
         self.rect.x += -1
         if hits:
             self.vel.y = -25
-
     def inbounds(self):
         if self.pos.x < 0:
             self.pos.x = 0
@@ -100,11 +102,8 @@ class Player(Sprite):
         self.controls()
         # friction
         self.acc.x += self.vel.x * -0.1
-        # self.acc.y += self.vel.y * -0.1
         self.vel += self.acc
         self.pos += self.vel + 0.5 * self.acc
-        # self.rect.x += self.xvel
-        # self.rect.y += self.yvel
         self.inbounds()
         self.rect.midbottom = self.pos
 
@@ -134,6 +133,9 @@ class Ball(Sprite):
         self.xvel = 5
         pg.draw.rect(self.image, color, [HEIGHT/2, WIDTH/2, 8, 8])
 
+    def __iter__(self):
+        yield (self)
+
 # updating the ball with its velocites in both directions, and keeping it inbounds within the screen
     def update(self):
         self.rect.x += self.xvel
@@ -146,17 +148,16 @@ class Ball(Sprite):
             self.xvel*=-1
         if self.rect.y > HEIGHT - self.rect.height:
             self.yvel*=-1
-        if self.rect.y<75:
-            
-            self.rect.y=HEIGHT/6.5
-
+        if self.yvel==0:
+            self.yvel=1
 #defines the bounce function and how it interacts when colliding with other objects 
     def bounce(self):
         self.xvel = -self.xvel
         self.yvel = randint(-8,8)
+
 #defines the class mob as a subclass of sprite with coordinats,size,color,etc
 class Mob(Sprite):
-    def __init__(self, x, y, w, h, color, typeof, health):
+    def __init__(self, x, y, w, h, color):
         Sprite.__init__(self)
         self.image = pg.Surface((w, h))
         self.color = color
@@ -165,7 +166,6 @@ class Mob(Sprite):
         self.rect.x = x
         self.rect.y = y
         self.speed = 5
-        self.typeof = typeof
         self.initialized = False
         
     def init(self):
@@ -173,13 +173,8 @@ class Mob(Sprite):
 
     def update(self):
         self.rect.x += self.speed
-        if self.typeof == "boss":
-            if self.rect.right > WIDTH or self.rect.x < 0:
-                self.speed *= -1
-                self.rect.y += 15
-        else:
-            if self.rect.right > WIDTH or self.rect.x < 0:
-                self.speed *= -1
+        if self.rect.right > WIDTH or self.rect.x < 0:
+            self.speed *= -1
      
 # init pygame and create a window
 pg.init()
@@ -192,29 +187,75 @@ clock = pg.time.Clock()
 player = Player()
 ground = Platform(0, HEIGHT, WIDTH, 1)
 ball1 = Ball(50,250,25,25,RED)
-roof = Platform(0,75,WIDTH, 1)
+
+
 # create groups
 all_sprites = pg.sprite.Group()
 all_plats = pg.sprite.Group()
 mobs = pg.sprite.Group()
 
 # instantiate lots of mobs in a for loop and add them to groups
-for i in range(10):
-    m = Mob(randint(0,WIDTH-100), randint(75,HEIGHT/2), 75, 25, (colorbyte(),colorbyte(),colorbyte()), "normal", 5)
+for i in range(20):
+    m = Mob(randint(0,WIDTH-100), randint(75,HEIGHT/2), 75, 25, (colorbyte(),colorbyte(),colorbyte()))
     all_sprites.add(m)
     mobs.add(m)
     m.init()
-    print(m)
+
 
 # add things to groups...
-all_sprites.add(player, ground, ball1, roof)
+all_sprites.add(player, ball1)
 all_plats.add(ground)
+
+smallfont = pg.font.SysFont('Corbel',35)
+text = smallfont.render('quit' , True , WHITE)
+mouse = pg.mouse.get_pos()
 
 # Game loop
 start_ticks = pg.time.get_ticks()
 running = True
+# while running:
+#     # keep the loop running using clock
+#     delta = clock.tick(FPS)
+#     seconds = floor((pg.time.get_ticks()-start_ticks)/1000)
+#     # checks for collison of floor and player and sets player y vel to 0 if so
+#     if pg.sprite.spritecollide(player, all_plats, False):
+#         player.pos.y = pg.sprite.spritecollide(player, all_plats, False)[0].rect.top
+#         player.vel.y = 0
+#     # checks for balls collison with player and mobs, aka floating platforms, if colliding, uses bounce function as interaction
+#     if pg.sprite.groupcollide(ball1, player,False,False):
+#         ball1.rect.y-=5
+#         ball1.bounce()
+#     if pg.sprite.spritecollide(ball1, mobs, True):
+#         ball1.bounce()
+#         SCORE+=1
+#     # checks for if player quit
+#     for event in pg.event.get():
+#         # check for closed window
+#         if event.type == pg.QUIT:
+#             running = False
+#         # if event.type == pg.MOUSEBUTTONDOWN:
+#         #     if WIDTH/2 <= mouse[0] <= WIDTH/2+140 and HEIGHT/2 <= mouse[1] <= HEIGHT/2+40:
+#         #         pg.quit()
+#         # if pg.mouse.get_pressed()==True:
+#         #     print('inbounds')
+#         #     if WIDTH/2 <= mouse[0] <= WIDTH/2+140 and HEIGHT/2 <= mouse[1] <= HEIGHT/2+40:
+#         #         pg.quit()
+#         if pg.sprite.collide_mask(ball1, ground) or len(mobs)==0:
+#             # GAMEOVER()
+#             # pg.draw.rect(screen,BLACK,[WIDTH/2,HEIGHT/2,140,40])
+#             # screen.blit(text , (WIDTH/2+50,HEIGHT/2))
+#             pg.quit()
+            
+#         else:
+#             screen.fill(BLACK)
+#             player.image.fill((player.r,player.g,player.b))
+#             draw_text("FPS: " + str(delta), 22, RED, 64, HEIGHT / 24)
+#             draw_text("Timer: " + str(seconds), 22, RED, 64, HEIGHT / 10)
+#             draw_text("POINTS: " + str(SCORE), 22, RED, 1200, HEIGHT / 24)
+        
+
 while running:
-    # keep the loop running using clock
+# keep the loop running using clock
     delta = clock.tick(FPS)
     seconds = floor((pg.time.get_ticks()-start_ticks)/1000)
     # checks for collison of floor and player and sets player y vel to 0 if so
@@ -224,8 +265,6 @@ while running:
     # checks for balls collison with player and mobs, aka floating platforms, if colliding, uses bounce function as interaction
     if pg.sprite.collide_mask(ball1, player):
         ball1.bounce()
-    if pg.sprite.collide_mask(ball1, roof):
-        ball1.bounce()
     if pg.sprite.spritecollide(ball1, mobs,True):
         ball1.bounce()
         SCORE+=1
@@ -234,27 +273,24 @@ while running:
         # check for closed window
         if event.type == pg.QUIT:
             running = False
-
     if pg.sprite.collide_mask(ball1, ground) or len(mobs)==0:
-        GAMEOVER()
-        sleep(3)
+        screen.fill(BLACK)
+        draw_text("FPS: " + str(delta), 22, BLACK, 64, HEIGHT / 24)
+        draw_text("Timer: " + str(seconds), 22, BLACK, 64, HEIGHT / 10)
+        draw_text("POINTS: " + str(SCORE), 22, BLACK, 300, HEIGHT / 24)
+        draw_text("GAME OVER, YOU HAD A SCORE OF " + str(SCORE), 64, WHITE, WIDTH/2, HEIGHT / 2)
+        all_sprites.empty()
+        
     else:
         screen.fill(BLACK)
         player.image.fill((player.r,player.g,player.b))
         draw_text("FPS: " + str(delta), 22, RED, 64, HEIGHT / 24)
         draw_text("Timer: " + str(seconds), 22, RED, 64, HEIGHT / 10)
         draw_text("POINTS: " + str(SCORE), 22, RED, 300, HEIGHT / 24)
-
-
-
-
-    ############ Update ##############
     # update all sprites
     all_sprites.update()
-
     # draw all sprites
     all_sprites.draw(screen)
-
     # buffer - after drawing everything, flip display
     pg.display.update()
     pg.display.flip()
