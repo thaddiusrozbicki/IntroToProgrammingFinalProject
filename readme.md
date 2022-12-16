@@ -11,13 +11,11 @@ If I am able to it would be interesting to spread out the spawning of mobs/platf
 
 ### Dependencies
 
-* Describe any prerequisites, libraries, OS version, etc., needed before installing program.
-* ex. Python 3.x, Pygame, etc.
+* Requires Python and an installation of Pygame
 
 ### Installing
 
-* How/where to download your program
-* Any modifications needed to be made to files/folders
+* Can be downloaded from Github, as a zip file
 
 ### Executing program
 
@@ -51,7 +49,7 @@ ex. ccozort@bcp.org
 
 ## License
 
-This project is licensed under the [NAME HERE] License - see the LICENSE.md file for details
+This project is licensed under the [MIT] License - see the LICENSE.md file for details
 
 ## Acknowledgments
 

@@ -16,22 +16,9 @@ from random import randint
 from os import *
 from math import *
 from time import *
+from settings import *
 vec = pg.math.Vector2
-# # game settings 
-WIDTH = 1280
-HEIGHT = 720
-FPS = 40
-mpos = (0,0)
-# player settings
-PLAYER_GRAV = 0.9
-PLAYER_FRIC = 0.1
-SCORE = 0
-# define colors
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
+
 # draws the text that will appear on screen once ran
 def draw_text(text, size, color, x, y):
         font_name = pg.font.match_font('arial')
@@ -45,16 +32,6 @@ def colorbyte():
     return random.randint(0,255)
 
 # create all classees as sprites...
-def GAMEOVER():
-    screen.fill(WHITE)
-    draw_text("FPS: " + str(delta), 22, WHITE, 64, HEIGHT / 24)
-    draw_text("Timer: " + str(seconds), 22, WHITE, 64, HEIGHT / 10)
-    draw_text("GAME OVER", 40, BLACK, WIDTH / 2, HEIGHT / 4)
-    draw_text("WOULD YOU LIKE TO PLAY AGAIN?", 20, BLACK, WIDTH / 2, HEIGHT / 1.45)
-    draw_text("POINTS: " + str(SCORE), 22, WHITE,1200, HEIGHT / 24)
-    ball1.xvel=0
-    ball1.yvel=0
-    all_sprites.empty()
 
 # player sprite, setting all ideas of Player, including color, velocity, health, etc
 class Player(Sprite):
@@ -73,24 +50,23 @@ class Player(Sprite):
 #allows for control of player through keys using built in pygame functions 
     def controls(self):
         keys = pg.key.get_pressed()
-        # if keys[pg.K_w]:
-        #     self.acc.y = -5
         if keys[pg.K_a]:
             self.acc.x = -5
-        # if keys[pg.K_s]:
-        #     self.acc.y = 5
         if keys[pg.K_d]:
             self.acc.x = 5
         if keys[pg.K_ESCAPE]: 
             pg.quit()
+# uses method iter to waive the interation error
     def __iter__(self):
         yield (self)
+
     def jump(self):
         self.rect.x += 1
         hits = pg.sprite.spritecollide(self, all_plats, False)
         self.rect.x += -1
         if hits:
             self.vel.y = -25
+# checks for whether or not the ball1 is off the drawn window
     def inbounds(self):
         if self.pos.x < 0:
             self.pos.x = 0
@@ -132,7 +108,7 @@ class Ball(Sprite):
         self.yvel = 5
         self.xvel = 5
         pg.draw.rect(self.image, color, [HEIGHT/2, WIDTH/2, 8, 8])
-
+# uses method iter to waive the interation error
     def __iter__(self):
         yield (self)
 
@@ -213,46 +189,6 @@ mouse = pg.mouse.get_pos()
 # Game loop
 start_ticks = pg.time.get_ticks()
 running = True
-# while running:
-#     # keep the loop running using clock
-#     delta = clock.tick(FPS)
-#     seconds = floor((pg.time.get_ticks()-start_ticks)/1000)
-#     # checks for collison of floor and player and sets player y vel to 0 if so
-#     if pg.sprite.spritecollide(player, all_plats, False):
-#         player.pos.y = pg.sprite.spritecollide(player, all_plats, False)[0].rect.top
-#         player.vel.y = 0
-#     # checks for balls collison with player and mobs, aka floating platforms, if colliding, uses bounce function as interaction
-#     if pg.sprite.groupcollide(ball1, player,False,False):
-#         ball1.rect.y-=5
-#         ball1.bounce()
-#     if pg.sprite.spritecollide(ball1, mobs, True):
-#         ball1.bounce()
-#         SCORE+=1
-#     # checks for if player quit
-#     for event in pg.event.get():
-#         # check for closed window
-#         if event.type == pg.QUIT:
-#             running = False
-#         # if event.type == pg.MOUSEBUTTONDOWN:
-#         #     if WIDTH/2 <= mouse[0] <= WIDTH/2+140 and HEIGHT/2 <= mouse[1] <= HEIGHT/2+40:
-#         #         pg.quit()
-#         # if pg.mouse.get_pressed()==True:
-#         #     print('inbounds')
-#         #     if WIDTH/2 <= mouse[0] <= WIDTH/2+140 and HEIGHT/2 <= mouse[1] <= HEIGHT/2+40:
-#         #         pg.quit()
-#         if pg.sprite.collide_mask(ball1, ground) or len(mobs)==0:
-#             # GAMEOVER()
-#             # pg.draw.rect(screen,BLACK,[WIDTH/2,HEIGHT/2,140,40])
-#             # screen.blit(text , (WIDTH/2+50,HEIGHT/2))
-#             pg.quit()
-            
-#         else:
-#             screen.fill(BLACK)
-#             player.image.fill((player.r,player.g,player.b))
-#             draw_text("FPS: " + str(delta), 22, RED, 64, HEIGHT / 24)
-#             draw_text("Timer: " + str(seconds), 22, RED, 64, HEIGHT / 10)
-#             draw_text("POINTS: " + str(SCORE), 22, RED, 1200, HEIGHT / 24)
-        
 
 while running:
 # keep the loop running using clock
